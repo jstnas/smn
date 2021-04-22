@@ -1,0 +1,2 @@
+# smn
+suckless mpd notifier
