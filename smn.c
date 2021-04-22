@@ -1,7 +1,7 @@
 #include "smn.h"
 
 bool get_connection(struct mpd_connection **conn) {
-	*conn = mpd_connection_new(NULL, 0, 0);
+	*conn = mpd_connection_new(host, port, timeout_ms);
 	if (conn == NULL) {
 		printf("Out of memory for connection\n");
 		return false;
