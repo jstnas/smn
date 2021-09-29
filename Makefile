@@ -1,7 +1,7 @@
 BIN_DIR = /usr/local/bin
 LIBS = -lmpdclient
 
-smn:
+smn: clean
 	gcc smn.c -o smn $(LIBS)
 
 clean:

@@ -24,21 +24,32 @@ bool get_status(struct mpd_status **status, struct mpd_connection *conn) {
 }
 
 void on_song_change() {
-	for (int c = 0; c < command_len; c++)
-		system(commands[c]);
+	printf("Song Change!\n");
+	FILE *p;
+	for (int c = 0; c < command_len; c++) {
+		p = popen(commands[c], "r");
+		if (p == NULL) {
+			printf("Failed to run %s", commands[c]);
+		}
+	}
 }
 
-bool update(struct mpd_connection *conn, struct mpd_status *status, int *song_id) {
-	if (!get_status(&status, conn))
+bool update(struct mpd_connection *conn, int *song_id) {
+	printf("Updating\r");
+	struct mpd_status *status = NULL;
+	if (!get_status(&status, conn)) {
+		printf("Failed to get status\n");
 		return false;
-	const int new_song_id = mpd_status_get_song_id(status);
+	}
+	int new_song_id = mpd_status_get_song_id(status);
 	// Check if the song has changed
 	if (*song_id != new_song_id && new_song_id != -1) {
 		*song_id = new_song_id;
+		printf("New song id is %i\n", *song_id);
 		on_song_change();
 	}
 	mpd_status_free(status);
-	usleep(update_delay);
+	sleep(1);
 	return true;
 }
 
@@ -47,17 +58,19 @@ void close_connection(struct mpd_connection *conn) {
 }
 
 int main() {
+	printf("Initialising smn\n");
 	// Init.
 	struct mpd_connection *conn = NULL;
-	struct mpd_status* status = NULL;
 	int song_id = -1;
 	if (!get_connection(&conn))
 		return 1;
 	// Mainloop.
 	bool running = true;
+	printf("Running mainloop\n");
 	while (running)
-		running = update(conn, status, &song_id);
+		running = update(conn, &song_id);
 	// Cleanup.
 	close_connection(conn);
+	printf("Closing smn\n");
 	return 0;
 }
