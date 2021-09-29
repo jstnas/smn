@@ -1,2 +1,0 @@
-# smn
-suckless mpd notifier
